@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ClauseGuard
 
-## Getting Started
+**Understand what you sign. See what happens next.**
 
-First, run the development server:
+ClauseGuard is a GenAI-powered hackathon demo for understanding and comparing legal-style documents. Users upload PDF, DOCX, or TXT files, then explore a plain-language summary, clauses, obligations, deadlines, what-if scenarios, document Q&A, and questions to take to a qualified legal professional.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## PromptWars challenge fit
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The challenge is AI for Legal Assistance & Access. ClauseGuard helps users understand and compare documents, identify stated duties and timelines, and prepare for professional review. It provides document-based information and assistance, not legal advice or a decision about whether a document is lawful or should be signed.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## GenAI architecture
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- The browser uploads a document to a Next.js API route.
+- The server extracts text with pdf2json for PDF, mammoth for DOCX, or UTF-8 decoding for TXT.
+- The server sends document text and a feature-specific prompt to Gemini 2.5 Flash through @google/genai. GEMINI_API_KEY stays on the server; GEMINI_MODEL can override the model.
+- Zod checks response structure. Quote checks compare returned citations with the uploaded text before results reach the UI.
+- Analysis is cached on the demo server. Scenario analysis, Q&A, professional questions and non-identical comparison make Gemini calls only after a user action. Identical comparison uses a deterministic bypass.
+- No external search, vector database, embeddings or RAG service is used.
 
-## Learn More
+## Try the demo
 
-To learn more about Next.js, take a look at the following resources:
+A name is requested only for a local browser demo session; there is no real account or password. The upload page includes a fictional sample agreement. The compare page includes two fictional versions. Download a sample, select it in the file picker, and run the analysis or comparison. Do not upload confidential or real client documents to the public hackathon demo.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The hosted demo uses temporary local files for a few evaluators. Files and analyses can disappear when the service restarts; re-upload the sample if a link expires. Document IDs are randomly generated. This is a small evaluation prototype, not a private document vault.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Local setup
 
-## Deploy on Vercel
+Requirements: Node.js 22, npm, and a Gemini API key.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Install dependencies: npm ci
+2. Copy .env.example to .env.local and set GEMINI_API_KEY.
+3. Start locally: npm run dev
+4. Open http://localhost:3000
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Checks: npm run lint and npm run build.
+
+## Hackathon submission
+
+See HACKATHON_SUBMISSION.md for the project description, GenAI mapping, live link, repository link, and short video outline. The repository must be public and below 10 MB; the demo video must be strictly under four minutes and show data entered live.
+
+## Hosting
+
+Cloud Run is used for this demo because its request limit supports the current 10 MiB upload. The service is capped at one instance and stores files only in that instance. This avoids adding a database or object store for two or three evaluators. The instance can restart and lose data. The Gemini key must be configured as a server-side secret. No .env.local or uploaded documents should be committed or included in the Cloud Run source upload.

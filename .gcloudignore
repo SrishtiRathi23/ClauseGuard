@@ -1,0 +1,9 @@
+.git/
+.next/
+.data/
+node_modules/
+.env*
+!.env.example
+*.log
+FINAL_PRE_DEPLOYMENT_AUDIT.md
+PHASE_12_E2E_TEST_REPORT.md

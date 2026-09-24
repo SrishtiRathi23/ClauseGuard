@@ -1,0 +1,16 @@
+SAMPLE SERVICE AGREEMENT — VERSION 1
+For demonstration only. This is fictional and is not a contract for real use.
+
+Parties: Acme Design Studio (Client) and Riya Shah (Consultant).
+
+1. Services. The Consultant will deliver a website accessibility review and written report to the Client by 30 October 2026.
+
+2. Payment. The Client will pay the Consultant INR 10,000 within 30 days after receiving an invoice. The agreement does not specify a late-payment penalty.
+
+3. Termination. Either party may terminate this agreement by giving the other party 30 days' written notice.
+
+4. Confidentiality. Both parties must keep non-public project information confidential during the agreement and for two years after termination.
+
+5. Ownership. After full payment, the Client owns the final written report. The Consultant may retain pre-existing tools and templates.
+
+6. Disputes. The parties will first try to resolve a dispute through discussion. The agreement does not specify a court or arbitration process.
