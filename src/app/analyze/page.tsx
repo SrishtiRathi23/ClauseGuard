@@ -21,8 +21,8 @@ export default function AnalyzePage() {
       setErrorMsg("This document appears to be empty.");
       return false;
     }
-    if (selectedFile.size > 10 * 1024 * 1024) {
-      setErrorMsg("This file is larger than 10 MB.\n\nPlease upload a smaller document.");
+    if (selectedFile.size > 4 * 1024 * 1024) {
+      setErrorMsg("This file is larger than 4 MiB.\n\nPlease upload a smaller document.");
       return false;
     }
     const ext = selectedFile.name.split(".").pop()?.toLowerCase();
@@ -83,7 +83,10 @@ export default function AnalyzePage() {
           throw new Error("This file type isn't supported.");
         }
         if (data.error === "FILE_TOO_LARGE") {
-          throw new Error("This file is larger than 10 MB.");
+          throw new Error("This file is larger than 4 MiB.");
+        }
+        if (data.error === "DOCUMENT_TOO_LONG") {
+          throw new Error("This document has too much extracted text for the demo (limit: 100,000 characters).");
         }
         throw new Error("We couldn't read this document.\n\nTry another file or export it as PDF.");
       }
@@ -113,7 +116,7 @@ export default function AnalyzePage() {
           Add a legal document and ClauseGuard will turn it into plain-language insights.
         </p>
         <p className="text-[12px] text-cg-muted leading-relaxed max-w-md mx-auto mt-4">
-          Demo use: upload a sample or non-confidential document. Files may be cleared when the demo service restarts.
+          Demo use: upload a fictional sample or non-confidential document. This prototype has no private user accounts.
         </p>
         <a href="/samples/service-agreement-v1.txt" download className="inline-block mt-3 text-[12px] font-medium text-cg-green underline underline-offset-2">
           Download a fictional sample agreement
@@ -144,7 +147,7 @@ export default function AnalyzePage() {
                 <UploadIcon className="size-5 text-cg-dark" strokeWidth={1.5} />
               </div>
               <p className="text-[14px] font-bold text-cg-dark mb-2">Drop your document here</p>
-              <p className="text-[12px] text-cg-muted mb-6">PDF, DOCX or TXT (Max 10 MB)</p>
+              <p className="text-[12px] text-cg-muted mb-6">PDF, DOCX or TXT (Max 4 MiB)</p>
               <button
                 className={cn(
                   buttonVariants({ variant: "outline" }),

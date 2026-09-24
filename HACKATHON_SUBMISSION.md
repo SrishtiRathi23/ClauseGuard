@@ -4,7 +4,7 @@ Challenge: AI for Legal Assistance & Access
 
 ## Submission links
 
-- Deployed prototype: add the verified Cloud Run URL after deployment.
+- Deployed prototype: add the verified Vercel URL after deployment.
 - Public GitHub repository: https://github.com/SrishtiRathi23/ClauseGuard
 - Demo video: add the uploaded video link after recording. It must be strictly under four minutes.
 
@@ -16,13 +16,13 @@ ClauseGuard helps people understand what a legal-style document says before they
 
 | Feature | Gemini integration |
 | --- | --- |
-| Document analysis | Server-side Gemini 2.5 Flash extracts the summary, parties, clauses, duties, deadlines and attention points from uploaded text. |
+| Document analysis | Server-side Gemini 2.5 Flash-Lite extracts the summary, parties, clauses, duties, deadlines and attention points from uploaded text. |
 | Scenario Lab | Gemini traces the uploaded document's conditions, stated consequences and missing information for a user-entered scenario. |
 | Document Q&A | Gemini answers a user-entered question with answer status and source quotes from the uploaded document. |
 | Comparison | Gemini identifies semantic changes between two uploaded versions; identical text bypasses the AI call. |
 | Professional questions | Gemini drafts document-specific questions to discuss with a qualified legal professional. |
 
-The application uses Next.js API routes, @google/genai, JSON output, Zod response schemas and quote checks. The API key remains server-side. It does not use external search, embeddings, a vector database or a RAG service.
+The application uses Vercel-hosted Next.js API routes, private Vercel Blob storage for extracted documents and cached analyses, @google/genai, JSON output, Zod response schemas and quote checks. The Gemini API key remains server-side. It does not use external search, embeddings, a vector database or a RAG service.
 
 ## Video outline — aim for 3 minutes 30 seconds
 
@@ -40,7 +40,7 @@ Keep the actual recording strictly under 4:00. Use real clicks and live input; d
 
 - [ ] Public URL opens without a host login
 - [ ] Sample upload, analysis, Q&A, scenario, questions and comparison work on the deployed URL
-- [ ] GitHub repository is public, includes source, and is below 10 MB
+- [x] GitHub repository is public, includes source, and is below 10 MB
 - [ ] Project description pasted into the submission form
 - [ ] Gemini architecture mapping pasted into the submission form
 - [ ] Video link opens and runtime is strictly below four minutes

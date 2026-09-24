@@ -5,7 +5,7 @@ import { FileType } from "@/lib/documents/types";
 
 export const maxDuration = 30; // Support longer processing for PDFs
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_FILE_SIZE = 4 * 1024 * 1024; // Leave room for multipart overhead under Vercel's 4.5 MB limit.
 
 export async function POST(req: NextRequest) {
   try {
@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
     console.error("Upload error:", error instanceof Error ? error.message : "Unknown error");
 
     if (error instanceof Error) {
-      if (error.message === "EMPTY_DOCUMENT" || error.message === "EXTRACTION_FAILED") {
+      if (["EMPTY_DOCUMENT", "DOCUMENT_TOO_LONG", "EXTRACTION_FAILED"].includes(error.message)) {
         return NextResponse.json({ error: error.message }, { status: 400 });
       }
     }

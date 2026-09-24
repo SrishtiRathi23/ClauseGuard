@@ -1,18 +1,42 @@
 import fs from "fs/promises";
 import path from "path";
+import { del, get, put } from "@vercel/blob";
 import { NormalizedDocument } from "./types";
 
-// NOTE: This uses local filesystem storage for Phase 2 prototyping.
-// When deployed to a serverless environment like Cloud Run, the local filesystem
-// is ephemeral and data will be lost on container restart.
-// For production, this should be swapped out with a managed storage solution (e.g., GCS + Postgres).
-//
-// SECURITY NOTE: All document/analysis IDs are validated against a strict pattern
-// before being used in filesystem paths. This prevents path traversal attacks
-// such as ../../etc/passwd or ..\secret from escaping the storage directory.
+// Local files keep development simple. On Vercel, a private Blob store shares
+// documents across independent function invocations on the free Hobby tier.
+// All IDs are validated before use in either storage path.
 
 const STORAGE_DIR = path.join(process.cwd(), ".data", "documents");
 const ANALYSIS_DIR = path.join(process.cwd(), ".data", "analyses");
+
+function usesBlob(): boolean {
+  if (process.env.VERCEL && !process.env.BLOB_READ_WRITE_TOKEN) {
+    throw new Error("BLOB_STORAGE_NOT_CONFIGURED");
+  }
+  return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+}
+
+async function saveBlob(folder: "documents" | "analyses", id: string, value: unknown) {
+  if (!isValidDocumentId(id)) throw new Error("INVALID_DOCUMENT_ID");
+  await put(`${folder}/${id}.json`, JSON.stringify(value), {
+    access: "private",
+    contentType: "application/json",
+    allowOverwrite: folder === "analyses",
+  });
+}
+
+async function readBlob<T>(folder: "documents" | "analyses", id: string): Promise<T | null> {
+  if (!isValidDocumentId(id)) return null;
+  const result = await get(`${folder}/${id}.json`, { access: "private", useCache: false });
+  if (!result?.stream || result.statusCode !== 200) return null;
+  return JSON.parse(await new Response(result.stream).text()) as T;
+}
+
+async function removeBlob(folder: "documents" | "analyses", id: string) {
+  if (!isValidDocumentId(id)) return;
+  await del(`${folder}/${id}.json`);
+}
 
 /**
  * Validates that a document ID matches the expected format and cannot
@@ -53,12 +77,14 @@ async function ensureDir(dir: string) {
 }
 
 export async function saveDocument(doc: NormalizedDocument): Promise<void> {
+  if (usesBlob()) return saveBlob("documents", doc.id, doc);
   await ensureDir(STORAGE_DIR);
   const filePath = safePath(STORAGE_DIR, doc.id, ".json");
   await fs.writeFile(filePath, JSON.stringify(doc, null, 2), "utf-8");
 }
 
 export async function getDocument(id: string): Promise<NormalizedDocument | null> {
+  if (usesBlob()) return readBlob<NormalizedDocument>("documents", id);
   try {
     const filePath = safePath(STORAGE_DIR, id, ".json");
     const data = await fs.readFile(filePath, "utf-8");
@@ -69,6 +95,7 @@ export async function getDocument(id: string): Promise<NormalizedDocument | null
 }
 
 export async function deleteDocument(id: string): Promise<void> {
+  if (usesBlob()) return removeBlob("documents", id);
   try {
     const filePath = safePath(STORAGE_DIR, id, ".json");
     await fs.unlink(filePath);
@@ -80,12 +107,14 @@ export async function deleteDocument(id: string): Promise<void> {
 // --- Analysis Storage ---
 
 export async function saveAnalysis(documentId: string, analysis: unknown): Promise<void> {
+  if (usesBlob()) return saveBlob("analyses", documentId, analysis);
   await ensureDir(ANALYSIS_DIR);
   const filePath = safePath(ANALYSIS_DIR, documentId, ".json");
   await fs.writeFile(filePath, JSON.stringify(analysis, null, 2), "utf-8");
 }
 
 export async function getAnalysis(documentId: string): Promise<unknown | null> {
+  if (usesBlob()) return readBlob<unknown>("analyses", documentId);
   try {
     const filePath = safePath(ANALYSIS_DIR, documentId, ".json");
     const data = await fs.readFile(filePath, "utf-8");
@@ -96,6 +125,7 @@ export async function getAnalysis(documentId: string): Promise<unknown | null> {
 }
 
 export async function deleteAnalysis(documentId: string): Promise<void> {
+  if (usesBlob()) return removeBlob("analyses", documentId);
   try {
     const filePath = safePath(ANALYSIS_DIR, documentId, ".json");
     await fs.unlink(filePath);

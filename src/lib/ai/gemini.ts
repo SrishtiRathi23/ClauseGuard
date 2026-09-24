@@ -3,7 +3,7 @@ import { SYSTEM_PROMPT } from "./prompts";
 
 // Ensure we don't crash if the API key is missing, handle gracefully at runtime.
 const apiKey = process.env.GEMINI_API_KEY || "";
-const modelName = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+const modelName = process.env.GEMINI_MODEL || "gemini-2.5-flash-lite";
 
 let ai: GoogleGenAI | null = null;
 

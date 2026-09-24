@@ -19,8 +19,8 @@ export default function ComparePage() {
   const fileInputBRef = useRef<HTMLInputElement>(null);
 
   const handleFileASelect = (file: File) => {
-    if (file.size > 10 * 1024 * 1024) {
-      setErrorMsg("Document A is larger than 10 MB.");
+    if (file.size > 4 * 1024 * 1024) {
+      setErrorMsg("Document A is larger than 4 MiB.");
       setState("ERROR");
       return;
     }
@@ -29,8 +29,8 @@ export default function ComparePage() {
   };
 
   const handleFileBSelect = (file: File) => {
-    if (file.size > 10 * 1024 * 1024) {
-      setErrorMsg("Document B is larger than 10 MB.");
+    if (file.size > 4 * 1024 * 1024) {
+      setErrorMsg("Document B is larger than 4 MiB.");
       setState("ERROR");
       return;
     }
@@ -151,7 +151,7 @@ export default function ComparePage() {
               See what changed between two versions of a legal document. We&apos;ll extract modified clauses, obligations, and deadlines.
             </p>
             <p className="text-[12px] text-cg-muted max-w-xl mt-3">
-              Demo use: upload sample or non-confidential documents. Files may be cleared when the demo service restarts.
+              Demo use: upload fictional samples or non-confidential documents. This prototype has no private user accounts.
             </p>
             <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3 text-[12px] font-medium text-cg-green">
               <a href="/samples/service-agreement-v1.txt" download className="underline underline-offset-2">Download sample A</a>

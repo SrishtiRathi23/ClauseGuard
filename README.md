@@ -12,16 +12,16 @@ The challenge is AI for Legal Assistance & Access. ClauseGuard helps users under
 
 - The browser uploads a document to a Next.js API route.
 - The server extracts text with pdf2json for PDF, mammoth for DOCX, or UTF-8 decoding for TXT.
-- The server sends document text and a feature-specific prompt to Gemini 2.5 Flash through @google/genai. GEMINI_API_KEY stays on the server; GEMINI_MODEL can override the model.
+- The server sends document text and a feature-specific prompt to Gemini 2.5 Flash-Lite through @google/genai. GEMINI_API_KEY stays on the server; GEMINI_MODEL can override the model. The free-tier request quota is limited, so the demo may show a quota message after heavy testing.
 - Zod checks response structure. Quote checks compare returned citations with the uploaded text before results reach the UI.
-- Analysis is cached on the demo server. Scenario analysis, Q&A, professional questions and non-identical comparison make Gemini calls only after a user action. Identical comparison uses a deterministic bypass.
+- Analysis is saved with the document in a private Vercel Blob store on the hosted demo. Local development uses `.data/` files. Scenario analysis, Q&A, professional questions and non-identical comparison make Gemini calls only after a user action. Identical comparison uses a deterministic bypass.
 - No external search, vector database, embeddings or RAG service is used.
 
 ## Try the demo
 
-A name is requested only for a local browser demo session; there is no real account or password. The upload page includes a fictional sample agreement. The compare page includes two fictional versions. Download a sample, select it in the file picker, and run the analysis or comparison. Do not upload confidential or real client documents to the public hackathon demo.
+A name is requested only for a local browser demo session; there is no real account or password. The upload page includes a fictional sample agreement. The compare page includes two fictional versions. Download a sample, select it in the file picker, and run the analysis or comparison. Files are capped at 4 MiB and extracted text at 100,000 characters. Do not upload confidential or real client documents to the public hackathon demo.
 
-The hosted demo uses temporary local files for a few evaluators. Files and analyses can disappear when the service restarts; re-upload the sample if a link expires. Document IDs are randomly generated. This is a small evaluation prototype, not a private document vault.
+The hosted demo stores extracted text and analyses in a private Vercel Blob store so separate functions can read the same data. Document IDs are randomly generated, but there is no account-based access control. This is a small evaluation prototype, not a private document vault. Demo files remain in the Blob store until deleted by the maintainer.
 
 ## Local setup
 
@@ -40,4 +40,4 @@ See HACKATHON_SUBMISSION.md for the project description, GenAI mapping, live lin
 
 ## Hosting
 
-Cloud Run is used for this demo because its request limit supports the current 10 MiB upload. The service is capped at one instance and stores files only in that instance. This avoids adding a database or object store for two or three evaluators. The instance can restart and lose data. The Gemini key must be configured as a server-side secret. No .env.local or uploaded documents should be committed or included in the Cloud Run source upload.
+Vercel Hobby is the intended free host for this personal hackathon demo. Connect this GitHub repository, create a **private** Vercel Blob store for the project, and set `GEMINI_API_KEY` as a server-side environment variable. Connecting the Blob store supplies `BLOB_READ_WRITE_TOKEN`. The server uses that token for document storage; without it, hosted uploads fail. Use a Gemini API key from a free-tier project to avoid AI charges. Hobby and Blob have free usage limits; reaching them can pause service until limits reset. Do not commit `.env.local` or uploaded documents.

@@ -1,6 +1,8 @@
 import mammoth from "mammoth";
 import { DocumentPage, FileType, NormalizedDocument } from "./types";
 
+const MAX_EXTRACTED_TEXT_LENGTH = 100_000;
+
 export async function extractDocument(
   fileBuffer: Buffer,
   fileName: string,
@@ -66,6 +68,10 @@ export async function extractDocument(
       throw new Error("EMPTY_DOCUMENT");
     }
 
+    if (rawText.length > MAX_EXTRACTED_TEXT_LENGTH) {
+      throw new Error("DOCUMENT_TOO_LONG");
+    }
+
     return {
       id: crypto.randomUUID().replace(/-/g, ""), // e.g. doc_... will be prepended outside
       fileName,
@@ -77,6 +83,9 @@ export async function extractDocument(
     };
   } catch (error) {
     console.error("Extraction error:", error instanceof Error ? error.message : "Unknown error");
-    throw new Error(error instanceof Error && error.message === "EMPTY_DOCUMENT" ? "EMPTY_DOCUMENT" : "EXTRACTION_FAILED");
+    if (error instanceof Error && ["EMPTY_DOCUMENT", "DOCUMENT_TOO_LONG"].includes(error.message)) {
+      throw error;
+    }
+    throw new Error("EXTRACTION_FAILED");
   }
 }
