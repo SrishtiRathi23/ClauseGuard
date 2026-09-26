@@ -1,4 +1,6 @@
 import mammoth from "mammoth";
+import "pdf-parse/worker";
+import { PDFParse } from "pdf-parse";
 import { DocumentPage, FileType, NormalizedDocument } from "./types";
 
 const MAX_EXTRACTED_TEXT_LENGTH = 100_000;
@@ -14,31 +16,16 @@ export async function extractDocument(
 
   try {
     if (fileType === "pdf") {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const PDFParser = require("pdf2json");
-
-      rawText = await new Promise((resolve, reject) => {
-        const pdfParser = new PDFParser(null, 1);
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        pdfParser.on("pdfParser_dataError", (errData: any) => reject(errData.parserError));
-        pdfParser.on("pdfParser_dataReady", () => {
-          resolve(pdfParser.getRawTextContent());
-        });
-
-        pdfParser.parseBuffer(fileBuffer);
-      });
-
-      // pdf2json separates pages with lines like "----------------Page (0) Break----------------"
-      const splitPages = rawText.split(/----------------Page \(\d+\) Break----------------/).map(t => t.trim()).filter(t => t.length > 0);
-
-      if (splitPages.length > 0) {
-        pages = splitPages.map((text, index) => ({
-          pageNumber: index + 1,
-          text: text,
+      const parser = new PDFParse({ data: fileBuffer });
+      try {
+        const result = await parser.getText();
+        rawText = result.text;
+        pages = result.pages.map((page, index) => ({
+          pageNumber: page.num || index + 1,
+          text: page.text.trim(),
         }));
-      } else {
-        pages = [{ pageNumber: 1, text: rawText.trim() }];
+      } finally {
+        await parser.destroy();
       }
 
     } else if (fileType === "docx") {

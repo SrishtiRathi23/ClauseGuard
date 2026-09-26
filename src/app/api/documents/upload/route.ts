@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     // Add the prefix for unique ID
     normalizedDoc.id = `doc_${normalizedDoc.id}`;
 
-    // Save to local storage
+    // Save for later analysis and comparison.
     await saveDocument(normalizedDoc);
 
     // Return only metadata (no raw text to keep payload small)

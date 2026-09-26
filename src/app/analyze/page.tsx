@@ -118,8 +118,8 @@ export default function AnalyzePage() {
         <p className="text-[12px] text-cg-muted leading-relaxed max-w-md mx-auto mt-4">
           Demo use: upload a fictional sample or non-confidential document. This prototype has no private user accounts.
         </p>
-        <a href="/samples/service-agreement-v1.txt" download className="inline-block mt-3 text-[12px] font-medium text-cg-green underline underline-offset-2">
-          Download a fictional sample agreement
+        <a href="/samples/service-agreement-v1.pdf" download className="inline-block mt-3 text-[12px] font-medium text-cg-green underline underline-offset-2">
+          Download a fictional sample agreement (PDF)
         </a>
       </div>
 

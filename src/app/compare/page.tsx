@@ -154,8 +154,8 @@ export default function ComparePage() {
               Demo use: upload fictional samples or non-confidential documents. This prototype has no private user accounts.
             </p>
             <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3 text-[12px] font-medium text-cg-green">
-              <a href="/samples/service-agreement-v1.txt" download className="underline underline-offset-2">Download sample A</a>
-              <a href="/samples/service-agreement-v2.txt" download className="underline underline-offset-2">Download sample B</a>
+              <a href="/samples/service-agreement-v1.pdf" download className="underline underline-offset-2">Download sample A (PDF)</a>
+              <a href="/samples/service-agreement-v2.pdf" download className="underline underline-offset-2">Download sample B (PDF)</a>
             </div>
           </div>
         </div>

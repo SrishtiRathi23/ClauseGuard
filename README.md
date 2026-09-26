@@ -11,7 +11,7 @@ The challenge is AI for Legal Assistance & Access. ClauseGuard helps users under
 ## GenAI architecture
 
 - The browser uploads a document to a Next.js API route.
-- The server extracts text with pdf2json for PDF, mammoth for DOCX, or UTF-8 decoding for TXT.
+- The server extracts text with pdf-parse for PDF, mammoth for DOCX, or UTF-8 decoding for TXT.
 - The server sends document text and a feature-specific prompt to Gemini 2.5 Flash-Lite through @google/genai. GEMINI_API_KEY stays on the server; GEMINI_MODEL can override the model. The free-tier request quota is limited, so the demo may show a quota message after heavy testing.
 - Zod checks response structure. Quote checks compare returned citations with the uploaded text before results reach the UI.
 - Analysis is saved with the document in a private Vercel Blob store on the hosted demo. Local development uses `.data/` files. Scenario analysis, Q&A, professional questions and non-identical comparison make Gemini calls only after a user action. Identical comparison uses a deterministic bypass.
@@ -19,7 +19,7 @@ The challenge is AI for Legal Assistance & Access. ClauseGuard helps users under
 
 ## Try the demo
 
-A name is requested only for a local browser demo session; there is no real account or password. The upload page includes a fictional sample agreement. The compare page includes two fictional versions. Download a sample, select it in the file picker, and run the analysis or comparison. Files are capped at 4 MiB and extracted text at 100,000 characters. Do not upload confidential or real client documents to the public hackathon demo.
+A name is requested only for a local browser demo session; there is no real account or password. The upload page includes a fictional PDF sample agreement. The compare page includes two fictional PDF versions. Download a sample, select it in the file picker, and run the analysis or comparison. Files are capped at 4 MiB and extracted text at 100,000 characters. Do not upload confidential or real client documents to the public hackathon demo.
 
 The hosted demo stores extracted text and analyses in a private Vercel Blob store so separate functions can read the same data. Document IDs are randomly generated, but there is no account-based access control. This is a small evaluation prototype, not a private document vault. Demo files remain in the Blob store until deleted by the maintainer.
 
