@@ -8,6 +8,7 @@ export const maxDuration = 30; // Support longer processing for PDFs
 const MAX_FILE_SIZE = 4 * 1024 * 1024; // Leave room for multipart overhead under Vercel's 4.5 MB limit.
 
 export async function POST(req: NextRequest) {
+  let stage: "request" | "extraction" | "storage" = "request";
   try {
     const formData = await req.formData();
     const file = formData.get("file");
@@ -50,12 +51,14 @@ export async function POST(req: NextRequest) {
       .slice(0, 255);                         // Limit length
 
     // Extract text and normalize
+    stage = "extraction";
     const normalizedDoc = await extractDocument(buffer, sanitizedName, fileType, file.size);
 
     // Add the prefix for unique ID
     normalizedDoc.id = `doc_${normalizedDoc.id}`;
 
     // Save for later analysis and comparison.
+    stage = "storage";
     await saveDocument(normalizedDoc);
 
     // Return only metadata (no raw text to keep payload small)
@@ -68,14 +71,17 @@ export async function POST(req: NextRequest) {
       textLength: normalizedDoc.rawText.length,
     });
   } catch (error: unknown) {
-    console.error("Upload error:", error instanceof Error ? error.message : "Unknown error");
+    console.error(`Upload ${stage} error:`, error instanceof Error ? error.message : "Unknown error");
 
     if (error instanceof Error) {
       if (["EMPTY_DOCUMENT", "DOCUMENT_TOO_LONG", "EXTRACTION_FAILED"].includes(error.message)) {
         return NextResponse.json({ error: error.message }, { status: 400 });
       }
+      if (error.message === "BLOB_STORAGE_NOT_CONFIGURED") {
+        return NextResponse.json({ error: "STORAGE_NOT_CONFIGURED" }, { status: 503 });
+      }
     }
 
-    return NextResponse.json({ error: "INTERNAL_ERROR" }, { status: 500 });
+    return NextResponse.json({ error: stage === "storage" ? "STORAGE_FAILED" : "INTERNAL_ERROR" }, { status: 500 });
   }
 }

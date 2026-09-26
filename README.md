@@ -11,7 +11,7 @@ The challenge is AI for Legal Assistance & Access. ClauseGuard helps users under
 ## GenAI architecture
 
 - The browser uploads a document to a Next.js API route.
-- The server extracts text with pdf-parse for PDF, mammoth for DOCX, or UTF-8 decoding for TXT.
+- The server extracts text with unpdf for PDF, mammoth for DOCX, or UTF-8 decoding for TXT.
 - The server sends document text and a feature-specific prompt to Gemini 2.5 Flash-Lite through @google/genai. GEMINI_API_KEY stays on the server; GEMINI_MODEL can override the model. The free-tier request quota is limited, so the demo may show a quota message after heavy testing.
 - Zod checks response structure. Quote checks compare returned citations with the uploaded text before results reach the UI.
 - Analysis is saved with the document in a private Vercel Blob store on the hosted demo. Local development uses `.data/` files. Scenario analysis, Q&A, professional questions and non-identical comparison make Gemini calls only after a user action. Identical comparison uses a deterministic bypass.

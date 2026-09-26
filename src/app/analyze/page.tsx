@@ -88,6 +88,15 @@ export default function AnalyzePage() {
         if (data.error === "DOCUMENT_TOO_LONG") {
           throw new Error("This document has too much extracted text for the demo (limit: 100,000 characters).");
         }
+        if (data.error === "EXTRACTION_FAILED") {
+          throw new Error("The PDF text could not be extracted. Please try the downloadable sample PDF or a text-based PDF.");
+        }
+        if (data.error === "STORAGE_NOT_CONFIGURED") {
+          throw new Error("Demo storage is not connected on Vercel. The project owner needs to add a Blob store.");
+        }
+        if (data.error === "STORAGE_FAILED") {
+          throw new Error("The document was read, but the demo storage could not save it. Please try again.");
+        }
         throw new Error("We couldn't read this document.\n\nTry another file or export it as PDF.");
       }
 

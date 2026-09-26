@@ -1,6 +1,5 @@
 import mammoth from "mammoth";
-import "pdf-parse/worker";
-import { PDFParse } from "pdf-parse";
+import { extractText, getDocumentProxy } from "unpdf";
 import { DocumentPage, FileType, NormalizedDocument } from "./types";
 
 const MAX_EXTRACTED_TEXT_LENGTH = 100_000;
@@ -16,16 +15,17 @@ export async function extractDocument(
 
   try {
     if (fileType === "pdf") {
-      const parser = new PDFParse({ data: fileBuffer });
+      const pdf = await getDocumentProxy(new Uint8Array(fileBuffer));
       try {
-        const result = await parser.getText();
-        rawText = result.text;
-        pages = result.pages.map((page, index) => ({
-          pageNumber: page.num || index + 1,
-          text: page.text.trim(),
+        const result = await extractText(pdf);
+        const pageTexts = Array.isArray(result.text) ? result.text : [result.text];
+        rawText = pageTexts.join("\n\n");
+        pages = pageTexts.map((text, index) => ({
+          pageNumber: index + 1,
+          text: text.trim(),
         }));
       } finally {
-        await parser.destroy();
+        await pdf.destroy();
       }
 
     } else if (fileType === "docx") {
