@@ -11,10 +11,9 @@ const STORAGE_DIR = path.join(process.cwd(), ".data", "documents");
 const ANALYSIS_DIR = path.join(process.cwd(), ".data", "analyses");
 
 function usesBlob(): boolean {
-  if (process.env.VERCEL && !process.env.BLOB_READ_WRITE_TOKEN) {
-    throw new Error("BLOB_STORAGE_NOT_CONFIGURED");
-  }
-  return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+  // A connected Vercel Blob store may authenticate with OIDC instead of a
+  // BLOB_READ_WRITE_TOKEN. Let the Blob SDK resolve either credential type.
+  return Boolean(process.env.VERCEL || process.env.BLOB_READ_WRITE_TOKEN);
 }
 
 async function saveBlob(folder: "documents" | "analyses", id: string, value: unknown) {

@@ -77,9 +77,6 @@ export async function POST(req: NextRequest) {
       if (["EMPTY_DOCUMENT", "DOCUMENT_TOO_LONG", "EXTRACTION_FAILED"].includes(error.message)) {
         return NextResponse.json({ error: error.message }, { status: 400 });
       }
-      if (error.message === "BLOB_STORAGE_NOT_CONFIGURED") {
-        return NextResponse.json({ error: "STORAGE_NOT_CONFIGURED" }, { status: 503 });
-      }
     }
 
     return NextResponse.json({ error: stage === "storage" ? "STORAGE_FAILED" : "INTERNAL_ERROR" }, { status: 500 });

@@ -73,33 +73,33 @@ export default function AnalyzePage() {
         body: formData,
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
 
       if (!res.ok) {
-        if (data.error === "EMPTY_DOCUMENT") {
+        if (data?.error === "EMPTY_DOCUMENT") {
           throw new Error("This document appears to be empty.");
         }
-        if (data.error === "UNSUPPORTED_TYPE") {
+        if (data?.error === "UNSUPPORTED_TYPE") {
           throw new Error("This file type isn't supported.");
         }
-        if (data.error === "FILE_TOO_LARGE") {
+        if (data?.error === "FILE_TOO_LARGE") {
           throw new Error("This file is larger than 4 MiB.");
         }
-        if (data.error === "DOCUMENT_TOO_LONG") {
+        if (data?.error === "DOCUMENT_TOO_LONG") {
           throw new Error("This document has too much extracted text for the demo (limit: 100,000 characters).");
         }
-        if (data.error === "EXTRACTION_FAILED") {
+        if (data?.error === "EXTRACTION_FAILED") {
           throw new Error("The PDF text could not be extracted. Please try the downloadable sample PDF or a text-based PDF.");
         }
-        if (data.error === "STORAGE_NOT_CONFIGURED") {
-          throw new Error("Demo storage is not connected on Vercel. The project owner needs to add a Blob store.");
+        if (data?.error === "STORAGE_FAILED") {
+          throw new Error("The document was read, but Vercel Blob could not save it. Check that a Blob store is connected to this project.");
         }
-        if (data.error === "STORAGE_FAILED") {
-          throw new Error("The document was read, but the demo storage could not save it. Please try again.");
-        }
-        throw new Error("We couldn't read this document.\n\nTry another file or export it as PDF.");
+        throw new Error(`Upload failed (HTTP ${res.status}, ${typeof data?.error === "string" ? data.error : "unexpected response"}).`);
       }
 
+      if (!data?.documentId) {
+        throw new Error("Upload returned no document ID. Please try again.");
+      }
       router.push(`/analyze/${data.documentId}`);
     } catch (err: unknown) {
       setFile(null);
