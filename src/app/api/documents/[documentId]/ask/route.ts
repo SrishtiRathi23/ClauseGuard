@@ -25,14 +25,16 @@ export async function POST(
       return NextResponse.json({ error: "QUESTION_TOO_LONG" }, { status: 400 });
     }
 
-    // Load document
-    const doc = await getDocument(documentId);
+    // Fetch independent private Blob records together to reduce response time.
+    const [doc, storedAnalysis] = await Promise.all([
+      getDocument(documentId),
+      getAnalysis(documentId),
+    ]);
     if (!doc) {
       return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
     }
 
-    // Load server-side analysis instead of trusting client-provided analysis
-    const storedAnalysis = await getAnalysis(documentId);
+    // Use server-side analysis instead of trusting client-provided analysis.
     if (!storedAnalysis) {
       return NextResponse.json({ error: "ANALYSIS_NOT_FOUND" }, { status: 404 });
     }

@@ -57,8 +57,7 @@ export default function ComparePage() {
     setErrorMsg(null);
 
     try {
-      const docAId = await uploadDoc(docAFile);
-      const docBId = await uploadDoc(docBFile);
+      const [docAId, docBId] = await Promise.all([uploadDoc(docAFile), uploadDoc(docBFile)]);
 
       setState("COMPARING");
 
@@ -118,11 +117,19 @@ export default function ComparePage() {
             <p className="text-[12px] font-bold text-cg-muted uppercase tracking-widest mb-2">{label}</p>
             <p className="text-[14px] font-bold text-cg-dark mb-1">Upload document</p>
             <p className="text-[12px] text-cg-muted mb-4">PDF, DOCX or TXT</p>
+            <button
+              type="button"
+              className="pointer-events-auto rounded-lg border border-cg-border px-4 py-2 text-[12px] font-medium text-cg-dark hover:bg-cg-background focus-visible:outline-2 focus-visible:outline-cg-green"
+              onClick={(event) => { event.stopPropagation(); inputRef.current?.click(); }}
+            >
+              Browse {label}
+            </button>
           </div>
         ) : (
           <div className="flex flex-col items-center">
             <button
               onClick={(e) => { e.stopPropagation(); onClear(); }}
+              aria-label={`Remove ${label}`}
               className="absolute top-3 right-3 p-1.5 text-cg-muted hover:text-cg-dark hover:bg-cg-background rounded-full transition-colors"
             >
               <X className="size-4" />
@@ -177,7 +184,7 @@ export default function ComparePage() {
               {errorMsg && (
                 <div className="bg-white border border-cg-attention/30 rounded-xl p-4 flex items-center gap-3 justify-center">
                   <AlertCircle className="size-4 text-cg-attention" />
-                  <span className="text-[14px] text-cg-dark font-medium">{errorMsg}</span>
+                  <span role="alert" className="text-[14px] text-cg-dark font-medium">{errorMsg}</span>
                 </div>
               )}
 

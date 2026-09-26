@@ -32,7 +32,7 @@ Requirements: Node.js 22, npm, and a Gemini API key.
 3. Start locally: npm run dev
 4. Open http://localhost:3000
 
-Checks: npm run lint and npm run build.
+Checks: `npm run check` runs ESLint, automated tests, and the production build. The tests cover PDF/TXT extraction, upload validation, safe document IDs, analysis caching and errors, and document comparison. GitHub Actions runs the same checks on every push and pull request. The tests use local sample files and mocked Gemini/storage calls, so no API key or paid service is needed in CI.
 
 ## Hackathon submission
 

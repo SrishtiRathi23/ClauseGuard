@@ -64,8 +64,6 @@ export default function AnalyzePage() {
     formData.append("file", file);
 
     try {
-      // Small simulated delay for UX if network is instant
-      await new Promise(r => setTimeout(r, 600));
       setState("EXTRACTING");
 
       const res = await fetch("/api/documents/upload", {
@@ -204,7 +202,7 @@ export default function AnalyzePage() {
           )}
 
           {(state === "UPLOADING" || state === "EXTRACTING") && (
-            <div className="flex flex-col items-center py-6 text-left w-full max-w-[240px] mx-auto">
+            <div role="status" aria-live="polite" className="flex flex-col items-center py-6 text-left w-full max-w-[240px] mx-auto">
               <p className="text-[14px] font-bold text-cg-dark mb-6 text-center w-full">Preparing your document</p>
               <div className="space-y-4 w-full">
                 <div className="flex items-center gap-3 text-[13px] text-cg-dark">
@@ -240,7 +238,7 @@ export default function AnalyzePage() {
               <div className="flex items-center justify-center w-12 h-12 rounded-full bg-cg-attention/10 mb-4">
                 <X className="size-5 text-cg-attention" strokeWidth={2} />
               </div>
-              <p className="text-[14px] font-bold text-cg-dark mb-3 whitespace-pre-line">
+              <p role="alert" className="text-[14px] font-bold text-cg-dark mb-3 whitespace-pre-line">
                 {errorMsg}
               </p>
               <button

@@ -15,8 +15,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "INVALID_DOCUMENT_ID" }, { status: 400 });
     }
 
-    const docA = await getDocument(documentAId);
-    const docB = await getDocument(documentBId);
+    const [docA, docB] = await Promise.all([
+      getDocument(documentAId),
+      getDocument(documentBId),
+    ]);
 
     if (!docA || !docB) {
       return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
